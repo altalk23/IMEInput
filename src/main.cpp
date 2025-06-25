@@ -165,7 +165,7 @@ class $modify(MyEGLView, CCEGLView){
 
 	void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
         auto dispatcher = CCIMEDispatcher::sharedDispatcher();
-        log::debug("Key pressed: {} (scancode: {}, action: {}, mods: {})", key, scancode, action, mods);
+        // log::debug("Key pressed: {} (scancode: {}, action: {}, mods: {})", key, scancode, action, mods);
         if ((key == 0x101 || key <= 0x109 && key >= 0x106) && dispatcher->hasDelegate()) {
             std::string text = "a";
             enumKeyCodes keyCode = enumKeyCodes::KEY_Unknown;

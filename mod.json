@@ -8,12 +8,15 @@
 	},
 	"id": "alk.ime-input",
 	"name": "IME Input",
-	"version": "v1.0.1",
+	"version": "1.0.2",
 	"developer": "alk",
 	"api": {
 		"include": [
 			"include/*.hpp"
 		]
+	},
+	"links": {
+		"source": "https://github.com/altalk23/IMEInput"	
 	},
 	"tags": ["api", "bugfix", "developer"],
 	"early-load": true,

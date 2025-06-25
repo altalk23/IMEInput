@@ -8,7 +8,7 @@
 	},
 	"id": "alk.ime-input",
 	"name": "IME Input",
-	"version": "v1.0.0",
+	"version": "v1.0.1",
 	"developer": "alk",
 	"api": {
 		"include": [

@@ -17,11 +17,11 @@ if (PROJECT_IS_TOP_LEVEL)
     target_compile_definitions(${PROJECT_NAME} PRIVATE IME_INPUT_EXPORTING)
 endif()
 
-target_link_libraries(${PROJECT_NAME}
-    imm32
-)
-
-add_subdirectory(test)
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME}
+        imm32
+    )
+endif()
 
 if (NOT DEFINED ENV{GEODE_SDK})
     message(FATAL_ERROR "Unable to find Geode SDK! Please define GEODE_SDK environment variable to point to Geode")

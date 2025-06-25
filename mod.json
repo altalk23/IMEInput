@@ -15,6 +15,7 @@
 			"include/*.hpp"
 		]
 	},
+	"tags": ["api", "bugfix", "developer"],
 	"early-load": true,
 	"description": "IME Input"
 }

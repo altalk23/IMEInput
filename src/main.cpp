@@ -65,9 +65,10 @@ LONG_PTR g_origWindowProc;
 
 void updateCandidateList(HIMC himc, HWND hwnd) {
     DWORD candidateSize = ImmGetCandidateListW(himc, 0, nullptr, 0);
-    std::vector<std::byte> buffer(candidateSize);
     // log::debug("IME Candidate List Size: {}", candidateSize);
     if (candidateSize > 0) {
+        std::vector<std::byte> buffer(candidateSize);
+        
         auto candidateList = reinterpret_cast<CANDIDATELIST*>(buffer.data());
         ImmGetCandidateListW(himc, 0, candidateList, candidateSize);
 
@@ -79,9 +80,9 @@ void updateCandidateList(HIMC himc, HWND hwnd) {
             // log::debug("IME Candidate {}: {}", i, string::wideToUtf8(str));
             auto string32 = string::utf8ToUtf32(string::wideToUtf8(str)).unwrapOrDefault();
             candidates.push_back(string32);
-            IMEExtensionDispatcherImpl::get()->notifyCandidateList(candidates, currentCandidate);
         }
-        
+
+        IMEExtensionDispatcherImpl::get()->notifyCandidateList(candidates, currentCandidate);
     }
 }
 
@@ -101,6 +102,12 @@ LRESULT CALLBACK HookedWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
 
             DWORD classStyle = GetClassLongPtr(hwnd, GCL_STYLE);
             // log::debug("IME enabled: {}", (classStyle & CS_IME) != 0);
+            return 0;
+        }
+        case WM_IME_STARTCOMPOSITION: {
+            return 0;
+        }
+        case WM_IME_ENDCOMPOSITION: {
             return 0;
         }
         case WM_IME_COMPOSITION:
@@ -124,8 +131,6 @@ LRESULT CALLBACK HookedWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
                     auto string32 = string::utf8ToUtf32(string::wideToUtf8(compStr)).unwrapOrDefault();
                     IMEExtensionDispatcherImpl::get()->notifyComposition(string32);
                     // log::debug("IME Composition String: {}", (char*)compStr.c_str());
-
-                    updateCandidateList(himc, hwnd);
                 }
             }
             else if (lparam == 0) {
@@ -136,10 +141,17 @@ LRESULT CALLBACK HookedWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
         }
         case WM_IME_NOTIFY:
         {
-            HIMC himc = ImmGetContext(hwnd);
-            updateCandidateList(himc, hwnd);
-            ImmReleaseContext(hwnd, himc);
-            goto windoworig;
+            // log::debug("IME Notify: {}", wparam);
+            switch (wparam) {
+                case IMN_SETCANDIDATEPOS:
+                case IMN_CHANGECANDIDATE:
+                case IMN_CLOSECANDIDATE:
+                case IMN_OPENCANDIDATE:
+                    HIMC himc = ImmGetContext(hwnd);
+                    updateCandidateList(himc, hwnd);
+                    ImmReleaseContext(hwnd, himc);
+                    return 0;
+            }
         }
     }
 windoworig:
@@ -153,9 +165,6 @@ void modifyWindowProc() {
 #include <Geode/modify/CCEGLView.hpp>
 class $modify(MyEGLView, CCEGLView){
     static auto onModify(auto& self) {
-        // The static version inlines the actual callback, so i uninline it by hooking it
-        (void)Mod::get()->hook((void*)(base::getCocos() + 0x75c40), &MyEGLView::onGLFWCharCallbackStatic, "onGLFWCharCallbackStatic");
-
         (void)self.setHookPriority("cocos2d::CCEGLView::onGLFWKeyCallback", Priority::Stub);
     }
 
@@ -163,43 +172,43 @@ class $modify(MyEGLView, CCEGLView){
         return static_cast<MyEGLView*>(CCEGLView::get());
     }
 
-	void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-        auto dispatcher = CCIMEDispatcher::sharedDispatcher();
-        // log::debug("Key pressed: {} (scancode: {}, action: {}, mods: {})", key, scancode, action, mods);
-        if ((key == 0x101 || key <= 0x109 && key >= 0x106) && dispatcher->hasDelegate()) {
-            std::string text = "a";
-            enumKeyCodes keyCode = enumKeyCodes::KEY_Unknown;
-            switch (key) {
-                case 0x101:
-                    text = "\n";
-                    break;
-                case 0x106:
-                    keyCode = enumKeyCodes::KEY_Right;
-                    break;
-                case 0x107:
-                    keyCode = enumKeyCodes::KEY_Left;
-                    break;
-                case 0x108:
-                    keyCode = enumKeyCodes::KEY_Down;
-                    break;
-                case 0x109:
-                    keyCode = enumKeyCodes::KEY_Up;
-                    break;
-            }
-            if (action >= 1) {
-                dispatcher->dispatchInsertText(text.c_str(), text.size(), keyCode);
-            }
-            return;
-        }
-        if (action >= 1 && key == 'V' && (mods & GLFW_MOD_CONTROL)) {
-            auto clipboard = clipboard::read();
-            if (clipboard.size() > 0) {
-                dispatcher->dispatchInsertText(clipboard.c_str(), static_cast<int>(clipboard.size()), KEY_Unknown);
-            }
-            return;
-        }
-		CCEGLView::onGLFWKeyCallback(window, key, scancode, action, mods);
-	}
+	// void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    //     auto dispatcher = CCIMEDispatcher::sharedDispatcher();
+    //     // log::debug("Key pressed: {} (scancode: {}, action: {}, mods: {})", key, scancode, action, mods);
+    //     if ((key == 0x101 || key <= 0x109 && key >= 0x106) && dispatcher->hasDelegate()) {
+    //         std::string text = "a";
+    //         enumKeyCodes keyCode = enumKeyCodes::KEY_Unknown;
+    //         switch (key) {
+    //             case 0x101:
+    //                 text = "\n";
+    //                 break;
+    //             case 0x106:
+    //                 keyCode = enumKeyCodes::KEY_Right;
+    //                 break;
+    //             case 0x107:
+    //                 keyCode = enumKeyCodes::KEY_Left;
+    //                 break;
+    //             case 0x108:
+    //                 keyCode = enumKeyCodes::KEY_Down;
+    //                 break;
+    //             case 0x109:
+    //                 keyCode = enumKeyCodes::KEY_Up;
+    //                 break;
+    //         }
+    //         if (action >= 1) {
+    //             dispatcher->dispatchInsertText(text.c_str(), text.size(), keyCode);
+    //         }
+    //         return;
+    //     }
+    //     if (action >= 1 && key == 'V' && (mods & GLFW_MOD_CONTROL)) {
+    //         auto clipboard = clipboard::read();
+    //         if (clipboard.size() > 0) {
+    //             dispatcher->dispatchInsertText(clipboard.c_str(), static_cast<int>(clipboard.size()), KEY_Unknown);
+    //         }
+    //         return;
+    //     }
+	// 	CCEGLView::onGLFWKeyCallback(window, key, scancode, action, mods);
+	// }
 
 	void onGLFWCharCallback(GLFWwindow* window, unsigned int codepoint) {
         // log::debug("Character input: {}", codepoint);
@@ -212,10 +221,6 @@ class $modify(MyEGLView, CCEGLView){
         if (GEODE_UNWRAP_IF_OK(utf8Char, string::utf32ToUtf8(u32view))) {
             CCIMEDispatcher::sharedDispatcher()->dispatchInsertText(utf8Char.c_str(), utf8Char.size(), enumKeyCodes::KEY_Unknown);
         }
-    }
-
-    static void onGLFWCharCallbackStatic(GLFWwindow* window, unsigned int codepoint) {
-        MyEGLView::get()->CCEGLView::onGLFWCharCallback(window, codepoint);
     }
 };
 

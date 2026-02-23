@@ -13,15 +13,13 @@ jobs:
       matrix:
         config:
         - name: Windows
-          os: ubuntu-latest
-          target: Win64
+          os: windows-latest
 
         - name: macOS
-          os: ubuntu-latest
-          target: MacOS
+          os: macos-latest
 
         - name: iOS
-          os: ubuntu-latest
+          os: macos-latest
           target: iOS
 
         - name: Android32
@@ -39,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build the mod
-        uses: editor-collab/build-geode-mod@xwin
+        uses: geode-sdk/build-geode-mod@main
         with:
           combine: true
           target: ${{ matrix.config.target }}

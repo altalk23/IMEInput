@@ -13,13 +13,15 @@ jobs:
       matrix:
         config:
         - name: Windows
-          os: windows-latest
+          os: ubuntu-latest
+          target: Win64
 
         - name: macOS
-          os: macos-latest
+          os: ubuntu-latest
+          target: MacOS
 
         - name: iOS
-          os: macos-latest
+          os: ubuntu-latest
           target: iOS
 
         - name: Android32

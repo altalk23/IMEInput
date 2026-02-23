@@ -172,6 +172,13 @@ class $modify(MyEGLView, CCEGLView){
         return static_cast<MyEGLView*>(CCEGLView::get());
     }
 
+    void performSafeClipboardPaste() {
+        auto clipboard = clipboard::read();
+        if (clipboard.size() > 0) {
+            CCIMEDispatcher::sharedDispatcher()->dispatchInsertText(clipboard.c_str(), static_cast<int>(clipboard.size()), KEY_Unknown);
+        }
+    }
+
 	// void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     //     auto dispatcher = CCIMEDispatcher::sharedDispatcher();
     //     // log::debug("Key pressed: {} (scancode: {}, action: {}, mods: {})", key, scancode, action, mods);

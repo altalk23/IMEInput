@@ -1,0 +1,14 @@
+# Ignore everything by default
+**
+
+# Allow required build files
+!src/
+!src/**
+!include/
+!include/**
+!CMakeLists.txt
+!logo.png
+!about.md
+!changelog.md
+!support.md
+!mod.json

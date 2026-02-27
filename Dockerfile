@@ -31,6 +31,10 @@ RUN --mount=type=cache,target=/workspace/cpm-cache \
 RUN --mount=type=cache,target=/workspace/cpm-cache \
     cmake --build build --parallel
 
+FROM scratch AS export-android32
+ARG MOD_ID
+COPY --from=android32 /workspace/project/build/${MOD_ID}.geode /${MOD_ID}.geode
+
 # Android 64
 FROM prevter/geode-sdk:android-latest AS android64
 ARG MOD_ID
@@ -57,6 +61,10 @@ RUN --mount=type=cache,target=/workspace/cpm-cache \
 RUN --mount=type=cache,target=/workspace/cpm-cache \
     cmake --build build --parallel
 
+FROM scratch AS export-android64
+ARG MOD_ID
+COPY --from=android64 /workspace/project/build/${MOD_ID}.geode /${MOD_ID}.geode
+
 # iOS
 FROM prevter/geode-sdk:ios-latest AS ios
 ARG MOD_ID
@@ -81,6 +89,10 @@ RUN --mount=type=cache,target=/workspace/cpm-cache \
 RUN --mount=type=cache,target=/workspace/cpm-cache \
     cmake --build build --parallel
 
+FROM scratch AS export-ios
+ARG MOD_ID
+COPY --from=ios /workspace/project/build/${MOD_ID}.geode /${MOD_ID}.geode
+
 # MacOS
 FROM prevter/geode-sdk:macos-latest AS macos
 ARG MOD_ID
@@ -102,6 +114,10 @@ RUN --mount=type=cache,target=/workspace/cpm-cache \
       -DGEODE_BINDINGS_REPO_PATH=/workspace/bindings
 RUN --mount=type=cache,target=/workspace/cpm-cache \
     cmake --build build --parallel
+
+FROM scratch AS export-macos
+ARG MOD_ID
+COPY --from=macos /workspace/project/build/${MOD_ID}.geode /${MOD_ID}.geode
 
 # Windows
 FROM prevter/geode-sdk:windows-latest AS windows
@@ -127,6 +143,10 @@ RUN --mount=type=cache,target=/workspace/cpm-cache \
       -DHOST_ARCH=x64
 RUN --mount=type=cache,target=/workspace/cpm-cache \
     cmake --build build --parallel
+
+FROM scratch AS export-windows
+ARG MOD_ID
+COPY --from=windows /workspace/project/build/${MOD_ID}.geode /${MOD_ID}.geode
 
 # Combine
 FROM prevter/geode-sdk:windows-latest AS combine

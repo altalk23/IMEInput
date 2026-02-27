@@ -10,6 +10,7 @@ FROM prevter/geode-sdk:android-latest AS android32
 ARG MOD_ID
 ARG CPM_CACHE_DIR
 ARG TARGETS
+ARG BINDINGS
 
 RUN if ! echo "$TARGETS" | grep -q 'android32'; then exit 0; fi
 
@@ -40,6 +41,7 @@ FROM prevter/geode-sdk:android-latest AS android64
 ARG MOD_ID
 ARG CPM_CACHE_DIR
 ARG TARGETS
+ARG BINDINGS
 
 RUN if ! echo "$TARGETS" | grep -q 'android64'; then exit 0; fi
 
@@ -70,6 +72,7 @@ FROM prevter/geode-sdk:ios-latest AS ios
 ARG MOD_ID
 ARG CPM_CACHE_DIR
 ARG TARGETS
+ARG BINDINGS
 
 RUN if ! echo "$TARGETS" | grep -q 'ios'; then exit 0; fi
 
@@ -98,6 +101,7 @@ FROM prevter/geode-sdk:macos-latest AS macos
 ARG MOD_ID
 ARG CPM_CACHE_DIR
 ARG TARGETS
+ARG BINDINGS
 
 RUN if ! echo "$TARGETS" | grep -q 'macos'; then exit 0; fi
 
@@ -124,6 +128,7 @@ FROM prevter/geode-sdk:windows-latest AS windows
 ARG MOD_ID
 ARG CPM_CACHE_DIR
 ARG TARGETS
+ARG BINDINGS
 
 RUN if ! echo "$TARGETS" | grep -q 'windows'; then exit 0; fi
 

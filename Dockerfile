@@ -4,6 +4,7 @@ ARG MOD_ID
 ARG TARGETS=android32,android64,ios,macos,windows
 ARG CPM_CACHE_DIR=/workspace/cpm-cache
 ARG BINDINGS=geode-sdk/bindings
+ARG SDK_VERSION=stable
 
 # Android 32
 FROM prevter/geode-sdk:android-latest AS android32
@@ -11,11 +12,14 @@ ARG MOD_ID
 ARG CPM_CACHE_DIR
 ARG TARGETS
 ARG BINDINGS
+ARG SDK_VERSION
 
 RUN if ! echo "$TARGETS" | grep -q 'android32'; then exit 0; fi
 
 WORKDIR /workspace
 RUN git clone https://github.com/${BINDINGS} --depth=1
+RUN geode sdk update ${SDK_VERSION}
+RUN geode sdk install-binaries android32
 
 WORKDIR /workspace/project
 COPY . .
@@ -42,11 +46,14 @@ ARG MOD_ID
 ARG CPM_CACHE_DIR
 ARG TARGETS
 ARG BINDINGS
+ARG SDK_VERSION
 
 RUN if ! echo "$TARGETS" | grep -q 'android64'; then exit 0; fi
 
 WORKDIR /workspace
 RUN git clone https://github.com/${BINDINGS} --depth=1
+RUN geode sdk update ${SDK_VERSION}
+RUN geode sdk install-binaries android64
 
 WORKDIR /workspace/project
 COPY . .
@@ -73,12 +80,14 @@ ARG MOD_ID
 ARG CPM_CACHE_DIR
 ARG TARGETS
 ARG BINDINGS
+ARG SDK_VERSION
 
 RUN if ! echo "$TARGETS" | grep -q 'ios'; then exit 0; fi
 
 WORKDIR /workspace
 RUN git clone https://github.com/${BINDINGS} --depth=1
-RUN geode sdk update nightly
+RUN geode sdk update ${SDK_VERSION}
+RUN geode sdk install-binaries ios
 
 WORKDIR /workspace/project
 COPY . .
@@ -102,11 +111,14 @@ ARG MOD_ID
 ARG CPM_CACHE_DIR
 ARG TARGETS
 ARG BINDINGS
+ARG SDK_VERSION
 
 RUN if ! echo "$TARGETS" | grep -q 'macos'; then exit 0; fi
 
 WORKDIR /workspace
 RUN git clone https://github.com/${BINDINGS} --depth=1
+RUN geode sdk update ${SDK_VERSION}
+RUN geode sdk install-binaries macos
 
 WORKDIR /workspace/project
 COPY . .
@@ -129,11 +141,14 @@ ARG MOD_ID
 ARG CPM_CACHE_DIR
 ARG TARGETS
 ARG BINDINGS
+ARG SDK_VERSION
 
 RUN if ! echo "$TARGETS" | grep -q 'windows'; then exit 0; fi
 
 WORKDIR /workspace
 RUN git clone https://github.com/${BINDINGS} --depth=1
+RUN geode sdk update ${SDK_VERSION}
+RUN geode sdk install-binaries windows
 
 WORKDIR /workspace/project
 COPY . .

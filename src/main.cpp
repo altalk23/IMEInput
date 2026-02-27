@@ -68,7 +68,7 @@ void updateCandidateList(HIMC himc, HWND hwnd) {
     // log::debug("IME Candidate List Size: {}", candidateSize);
     if (candidateSize > 0) {
         std::vector<std::byte> buffer(candidateSize);
-        
+
         auto candidateList = reinterpret_cast<CANDIDATELIST*>(buffer.data());
         ImmGetCandidateListW(himc, 0, candidateList, candidateSize);
 
@@ -137,7 +137,7 @@ LRESULT CALLBACK HookedWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
                 IMEExtensionDispatcherImpl::get()->notifyComposition(U"");
             }
             ImmReleaseContext(hwnd, himc);
-            return 0; 
+            return 0;
         }
         case WM_IME_NOTIFY:
         {

@@ -2,6 +2,7 @@
 **
 
 # Allow required build files
+!resources/
 !src/
 !src/**
 !include/

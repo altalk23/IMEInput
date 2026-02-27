@@ -16,10 +16,8 @@ RUN geode sdk update ${SDK_VERSION} \
     && geode sdk install-binaries -p android32 \
     && git clone https://github.com/${BINDINGS} --depth=1 /workspace/bindings
 
-# copy cmakelists and configure project
 WORKDIR /workspace/project
-COPY CMakeLists.txt .
-COPY mod.json .
+COPY . .
 
 RUN --mount=type=cache,target=/workspace/cpm-cache \
     --mount=type=cache,target=/workspace/project/build,id=android32 \
@@ -30,13 +28,8 @@ RUN --mount=type=cache,target=/workspace/cpm-cache \
       -DCMAKE_TOOLCHAIN_FILE=/opt/android-ndk/build/cmake/android.toolchain.cmake \
       -DANDROID_ABI=armeabi-v7a \
       -DANDROID_PLATFORM=android-23 \
-      -DANDROID_STL=c++_shared
-
-# copy source and build
-COPY . .
-RUN --mount=type=cache,target=/workspace/cpm-cache \
-    --mount=type=cache,target=/workspace/project/build,id=android32 \
-    cmake --build build --parallel \
+      -DANDROID_STL=c++_shared \
+    && cmake --build build --parallel \
     && cp build/${MOD_ID}.geode /workspace/
 
 FROM scratch AS export-android32
@@ -55,8 +48,7 @@ RUN geode sdk update ${SDK_VERSION} \
     && git clone https://github.com/${BINDINGS} --depth=1 /workspace/bindings
 
 WORKDIR /workspace/project
-COPY CMakeLists.txt .
-COPY mod.json .
+COPY . .
 
 RUN --mount=type=cache,target=/workspace/cpm-cache \
     --mount=type=cache,target=/workspace/project/build,id=android64 \
@@ -67,12 +59,8 @@ RUN --mount=type=cache,target=/workspace/cpm-cache \
       -DCMAKE_TOOLCHAIN_FILE=/opt/android-ndk/build/cmake/android.toolchain.cmake \
       -DANDROID_ABI=arm64-v8a \
       -DANDROID_PLATFORM=android-23 \
-      -DANDROID_STL=c++_shared
-
-COPY . .
-RUN --mount=type=cache,target=/workspace/cpm-cache \
-    --mount=type=cache,target=/workspace/project/build,id=android64 \
-    cmake --build build --parallel \
+      -DANDROID_STL=c++_shared \
+    && cmake --build build --parallel \
     && cp build/${MOD_ID}.geode /workspace/
 
 FROM scratch AS export-android64
@@ -91,8 +79,7 @@ RUN geode sdk update ${SDK_VERSION} \
     && git clone https://github.com/${BINDINGS} --depth=1 /workspace/bindings
 
 WORKDIR /workspace/project
-COPY CMakeLists.txt .
-COPY mod.json .
+COPY . .
 
 RUN --mount=type=cache,target=/workspace/cpm-cache \
     --mount=type=cache,target=/workspace/project/build,id=ios \
@@ -100,12 +87,8 @@ RUN --mount=type=cache,target=/workspace/cpm-cache \
       -DCMAKE_BUILD_TYPE=RelWithDebInfo \
       -DCPM_SOURCE_CACHE=${CPM_CACHE_DIR} \
       -DGEODE_BINDINGS_REPO_PATH=/workspace/bindings \
-      -DGEODE_IOS_SDK="${CMAKE_OSX_SYSROOT}"
-
-COPY . .
-RUN --mount=type=cache,target=/workspace/cpm-cache \
-    --mount=type=cache,target=/workspace/project/build,id=ios \
-    cmake --build build --parallel \
+      -DGEODE_IOS_SDK="${CMAKE_OSX_SYSROOT}" \
+    && cmake --build build --parallel \
     && cp build/${MOD_ID}.geode /workspace/
 
 FROM scratch AS export-ios
@@ -124,8 +107,7 @@ RUN geode sdk update ${SDK_VERSION} \
     && git clone https://github.com/${BINDINGS} --depth=1 /workspace/bindings
 
 WORKDIR /workspace/project
-COPY CMakeLists.txt .
-COPY mod.json .
+COPY . .
 
 RUN --mount=type=cache,target=/workspace/cpm-cache \
     --mount=type=cache,target=/workspace/project/build,id=macos \
@@ -133,12 +115,8 @@ RUN --mount=type=cache,target=/workspace/cpm-cache \
       -DCMAKE_BUILD_TYPE=RelWithDebInfo \
       -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
       -DCPM_SOURCE_CACHE=${CPM_CACHE_DIR} \
-      -DGEODE_BINDINGS_REPO_PATH=/workspace/bindings
-
-COPY . .
-RUN --mount=type=cache,target=/workspace/cpm-cache \
-    --mount=type=cache,target=/workspace/project/build,id=macos \
-    cmake --build build --parallel \
+      -DGEODE_BINDINGS_REPO_PATH=/workspace/bindings \
+    && cmake --build build --parallel \
     && cp build/${MOD_ID}.geode /workspace/
 
 FROM scratch AS export-macos
@@ -157,8 +135,7 @@ RUN geode sdk update ${SDK_VERSION} \
     && git clone https://github.com/${BINDINGS} --depth=1 /workspace/bindings
 
 WORKDIR /workspace/project
-COPY CMakeLists.txt .
-COPY mod.json .
+COPY . .
 
 RUN --mount=type=cache,target=/workspace/cpm-cache \
     --mount=type=cache,target=/workspace/project/build,id=windows \
@@ -168,13 +145,9 @@ RUN --mount=type=cache,target=/workspace/cpm-cache \
       -DGEODE_BINDINGS_REPO_PATH=/workspace/bindings \
       -DCMAKE_TOOLCHAIN_FILE=/root/.local/share/Geode/cross-tools/clang-msvc-sdk/clang-msvc.cmake \
       -DSPLAT_DIR=/root/.local/share/Geode/cross-tools/splat \
-      -DHOST_ARCH=x64
-
-COPY . .
-RUN --mount=type=cache,target=/workspace/cpm-cache \
-    --mount=type=cache,target=/workspace/project/build,id=windows \
-    cmake --build build --parallel \
-    && cp build/${MOD_ID}.geode /workspace/
+      -DHOST_ARCH=x64 \
+      && cmake --build build --parallel \
+      && cp build/${MOD_ID}.geode /workspace/
 
 FROM scratch AS export-windows
 ARG MOD_ID

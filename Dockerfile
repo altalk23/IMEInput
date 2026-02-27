@@ -19,7 +19,7 @@ RUN if ! echo "$TARGETS" | grep -q 'android32'; then exit 0; fi
 WORKDIR /workspace
 RUN git clone https://github.com/${BINDINGS} --depth=1
 RUN geode sdk update ${SDK_VERSION}
-RUN geode sdk install-binaries android32
+RUN geode sdk install-binaries -p android32
 
 WORKDIR /workspace/project
 COPY . .
@@ -53,7 +53,7 @@ RUN if ! echo "$TARGETS" | grep -q 'android64'; then exit 0; fi
 WORKDIR /workspace
 RUN git clone https://github.com/${BINDINGS} --depth=1
 RUN geode sdk update ${SDK_VERSION}
-RUN geode sdk install-binaries android64
+RUN geode sdk install-binaries -p android64
 
 WORKDIR /workspace/project
 COPY . .
@@ -87,7 +87,7 @@ RUN if ! echo "$TARGETS" | grep -q 'ios'; then exit 0; fi
 WORKDIR /workspace
 RUN git clone https://github.com/${BINDINGS} --depth=1
 RUN geode sdk update ${SDK_VERSION}
-RUN geode sdk install-binaries ios
+RUN geode sdk install-binaries -p ios
 
 WORKDIR /workspace/project
 COPY . .
@@ -118,7 +118,7 @@ RUN if ! echo "$TARGETS" | grep -q 'macos'; then exit 0; fi
 WORKDIR /workspace
 RUN git clone https://github.com/${BINDINGS} --depth=1
 RUN geode sdk update ${SDK_VERSION}
-RUN geode sdk install-binaries macos
+RUN geode sdk install-binaries -p macos
 
 WORKDIR /workspace/project
 COPY . .
@@ -148,7 +148,7 @@ RUN if ! echo "$TARGETS" | grep -q 'windows'; then exit 0; fi
 WORKDIR /workspace
 RUN git clone https://github.com/${BINDINGS} --depth=1
 RUN geode sdk update ${SDK_VERSION}
-RUN geode sdk install-binaries windows
+RUN geode sdk install-binaries -p windows
 
 WORKDIR /workspace/project
 COPY . .

@@ -37,9 +37,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v5
 
-    - name: Set up QEMU and Buildx
-      uses: docker/setup-qemu-action@v3
-
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -50,7 +47,6 @@ jobs:
         target: export-${{ matrix.config.target }}
         build-args: |
           MOD_ID=${{ env.MOD_ID }}
-          TARGETS=${{ matrix.config.target }}
         outputs: type=local,dest=./out
         cache-from: type=gha
         cache-to: type=gha,mode=max

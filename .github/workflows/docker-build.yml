@@ -50,6 +50,8 @@ jobs:
         outputs: type=local,dest=./out
         cache-from: type=gha
         cache-to: type=gha,mode=max
+      env:
+        DOCKER_BUILD_SUMMARY: false
 
     - name: Upload ${{ matrix.config.name }} artifact
       uses: actions/upload-artifact@v4

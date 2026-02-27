@@ -48,8 +48,8 @@ jobs:
         build-args: |
           MOD_ID=${{ env.MOD_ID }}
         outputs: type=local,dest=./out
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-from: type=gha,scope=geode-mod-${{ matrix.config.target }}
+        cache-to: type=gha,mode=max,compression=zstd,compression-level=8,scope=geode-mod-${{ matrix.config.target }}
       env:
         DOCKER_BUILD_SUMMARY: false
 
